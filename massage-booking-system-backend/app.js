@@ -12,6 +12,15 @@ const config = require('./utils/config')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 
+const httpsRedirect = (req, res, next) => {
+  const forwardedProtocol = req.headers['x-forwarded-proto']
+  if (forwardedProtocol === 'http') {
+    return res.redirect(`https://${req.headers.host}${req.url}`)
+  }
+  next()
+}
+app.use(httpsRedirect)
+
 // This route is available without authentication
 const tvRouter = require('./controllers/tv')
 app.use('/api/tv', tvRouter)
